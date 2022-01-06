@@ -130,8 +130,8 @@ void tiled_matmul_auto(size_t dim_I, size_t dim_J, size_t dim_K,
 void SystolicMultiply(char accelerator_mode, bool relu, int dimI, int dimJ, int dimK,
                       const elem_t* in1, const elem_t* in2, elem_t* out, acc_scale_t real_multiplier, const acc_t* bias) {
 #ifndef FOR_FIRESIM
-  printf("Called into systolic matmul!\n");
-  printf("Using accelerated matmul with dimensions (%d, %d, %d)\n", dimI, dimJ, dimK);
+  // printf("Called into systolic matmul!\n");
+  // printf("Using accelerated matmul with dimensions (%d, %d, %d)\n", dimI, dimJ, dimK);
 #endif
   tiled_matmul_auto(dimI, dimJ, dimK, in1, in2, bias, out, /*activation= */ relu,
                     real_multiplier,
@@ -156,8 +156,8 @@ void SystolicGemm(char accelerator_mode,
                   acc_scale_t beta,
                   elem_t* C) {
 #ifndef FOR_FIRESIM
-  printf("Called into systolic gemm!\n");
-  printf("Using accelerated gemm with dimensions (%zd, %zd, %zd)\n", M, N, K);
+  // printf("Called into systolic gemm!\n");
+  // printf("Using accelerated gemm with dimensions (%zd, %zd, %zd)\n", M, N, K);
 #endif
 
   tiled_gemm_auto(M, N, K, A, B, beta == 0 ? nullptr : C, C, /*activation= */ false,
@@ -180,8 +180,8 @@ void SystolicGemm(char accelerator_mode,
                   elem_t* C,
                   int ldc) {
 #ifndef FOR_FIRESIM
-  printf("Called into systolic gemm!\n");
-  printf("Using accelerated gemm with dimensions (%zd, %zd, %zd)\n", M, N, K);
+  // printf("Called into systolic gemm!\n");
+  // printf("Using accelerated gemm with dimensions (%zd, %zd, %zd)\n", M, N, K);
 #endif
   tiled_gemm_auto(M, N, K,
                  lda, ldb, ldc, ldc,
@@ -202,8 +202,8 @@ void SystolicMultiply(char accelerator_mode, bool relu,
                       acc_scale_t real_multiplier,
                       const acc_t* bias, int strideBias, bool repeating_bias) {
 #ifndef FOR_FIRESIM
-  printf("Called into systolic matmul!\n");
-  printf("Using accelerated matmul with dimensions (%d, %d, %d)\n", dimI, dimJ, dimK);
+  // printf("Called into systolic matmul!\n");
+  // printf("Using accelerated matmul with dimensions (%d, %d, %d)\n", dimI, dimJ, dimK);
 #endif
   tiled_matmul_auto(dimI, dimJ, dimK,
                     strideIn1, strideIn2, strideBias, strideOut,

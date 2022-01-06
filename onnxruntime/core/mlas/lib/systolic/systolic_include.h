@@ -1040,6 +1040,7 @@ static void tiled_matmul_auto(size_t dim_I, size_t dim_J, size_t dim_K,
         bool full_C, bool low_D,
         uint8_t weightA,
         enum tiled_matmul_type_t tiled_matmul_type) {
+          
 
 #define partition_rows (BANK_NUM * BANK_ROWS / 2)
 #define mats_in_partition (partition_rows / DIM)
@@ -1054,6 +1055,9 @@ static void tiled_matmul_auto(size_t dim_I, size_t dim_J, size_t dim_K,
 #define db_max_tile_i_j ((size_t)sqrt(db_mats_in_acc))
 #define db_max_tile_k (db_mats_in_partition / db_max_tile_i_j)
 
+    printf("Test woo tiled_matmul_auto \n");
+    printf("Test woo tiled_matmul_auto DIM : %d \n
+      tiled_matmul : %d , WS : %d\n", DIM, tiled_matmul_type, WS);
     const size_t dim_I_padded = (dim_I / DIM + (dim_I % DIM != 0)) * DIM;
     const size_t dim_J_padded = (dim_J / DIM + (dim_J % DIM != 0)) * DIM;
     const size_t dim_K_padded = (dim_K / DIM + (dim_K % DIM != 0)) * DIM;
