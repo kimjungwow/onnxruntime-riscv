@@ -578,6 +578,10 @@ static void sp_tiled_matmul_ws(const elem_t * A, const elem_t * B,
   }
   */
 
+  printf("nwkim,gemmini_loop_ws,A_B_C,%p,%p,%p,\n",A,B,C);
+  printf("nwkim,PARAM_gemmini_loop_ws,I_J_K,%lu,%lu,%lu,pad_I_J_K,%lu,%lu,%lu,\n",(unsigned long)I,(unsigned long)J,(unsigned long)K,(unsigned long)pad_I,(unsigned long)pad_J,(unsigned long)pad_K);
+  printf("nwkim,PARAM_gemmini_loop_ws2,row_stride_A_B_C_D,%lu,%lu,%lu,%lu,transpose_A_B,%d,%d,\n",(unsigned long)A_row_stride, (unsigned long)B_row_stride,(unsigned long)C_row_stride,(unsigned long)(repeating_bias ? 0 : D_row_stride),a_transpose,b_transpose);
+  printf("nwkim,PARAM_gemmini_loop_ws3,full_C,%d,low_D,%d,no_bias,%d,repeating_bias,%d,\n",full_C,low_D,no_bias,repeating_bias);
   // Combined loop
   gemmini_loop_ws(I, J, K, pad_I, pad_J, pad_K, A, B, no_bias ? NULL : D, C,
     A_row_stride, B_row_stride, repeating_bias ? 0 : D_row_stride, C_row_stride,
@@ -865,6 +869,7 @@ static void tiled_matmul(size_t dim_I, size_t dim_J, size_t dim_K,
         bool full_C, bool low_D,
         uint8_t weightA,
         enum tiled_matmul_type_t tiled_matmul_type) {
+  printf("nwkim,tiled_matmul,type_cpu_os_ws,%d,%d,%d,%d,\n",tiled_matmul_type,CPU,OS,WS);
 
 #ifdef GEMMINI_ASSERTIONS
   // Make sure that the tiling factors make sense
@@ -1151,6 +1156,8 @@ static void sp_tiled_conv_A_stride(
     C_sp_addr_row = (C_sp_addr_row + ACC_ROWS / 2) % ACC_ROWS;
   }
 
+  printf("nwkim,gemmini_loop_conv_ws,I_W_O_B,%p,%p,%p,%p,\n",input,weights,output,bias);
+  printf("nwkim,PARAMS_gemmini_loop_conv_ws,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,\n",batch_size, in_dim, in_channels, out_channels, out_dim, pool_out_dim, stride, padding, kernel_dim, kernel_dilation, pool_size, pool_stride, pool_padding, batches, porows, pocols, pochs, krows, kcols, kchs, lpad, rpad, upad, dpad, plpad, prpad, pupad, pdpad, orows, ocols);
   gemmini_loop_conv_ws(batch_size, in_dim, in_channels, out_channels, out_dim, pool_out_dim, stride, padding, kernel_dim, kernel_dilation, pool_size, pool_stride, pool_padding, batches, porows, pocols, pochs, krows, kcols, kchs, lpad, rpad, upad, dpad, plpad, prpad, pupad, pdpad, orows, ocols, weights, output, bias, input, no_bias, no_pool, downsample, wrot180, input_dilated, act, trans_output_1203, trans_weight_1203, trans_weight_0132, trans_input_3120);
 
   /*
@@ -2650,6 +2657,7 @@ static void tiled_conv_A_stride(
         int pool_size, int pool_stride, int pool_padding,
 
         enum tiled_matmul_type_t tiled_conv_type) {
+  printf("nwkim,tiled_conv_A_stride,type_CPU_OS_WS,%d,%d,%d,%d,\n",tiled_conv_type,CPU,OS,WS);
 
 #ifdef GEMMINI_ASSERTIONS
   if (trans_weight_1203 && trans_weight_0132) {
@@ -2893,6 +2901,7 @@ static void tiled_conv_A_stride_auto(
 
         enum tiled_matmul_type_t tiled_conv_type) {
 
+    printf("nwkim,tiled_conv_A_stride_auto,\n");
     const bool no_pool = pool_stride == 0;
     if (no_pool) {
         pool_size = 1;
@@ -4186,6 +4195,7 @@ static void tiled_conv_auto_first(
         int pool_size, int pool_stride, int pool_padding,
 
 	enum tiled_matmul_type_t tiled_conv_type) {
+   printf("jwkim,4,tiled_conv_auto,\n");
    int weight_bank = 1;
 
    const bool no_pool = pool_stride == 0 || (pool_stride == 1 && pool_size == 1 && pool_padding == 0);
@@ -4626,6 +4636,7 @@ static void tiled_conv_auto(
 
         enum tiled_matmul_type_t tiled_conv_type) {
 
+    printf("nwkim,tiled_conv_auto\n");
     const bool no_pool = pool_stride == 0;
     if (no_pool) {
         pool_size = 1;
