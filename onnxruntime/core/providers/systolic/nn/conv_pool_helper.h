@@ -34,6 +34,7 @@ inline bool TryConvOnSystolic(char accelerator_mode,
                               bool relu,
                               const PoolAttributes *pool_attrs_,
                               float output_scale) {
+  printf("nwkim,TryConvOnSystolic,X,%s,W,%s,B,%s,output,%s,\n",X->ToString(),W->ToString(),B->ToString(),output->ToString());
   if (groups != 1) {
     return false;
   }
@@ -144,6 +145,7 @@ inline bool TryConvTransposeOnSystolic(char accelerator_mode,
                               Tensor* output,
                               bool relu,
                               float output_scale) {
+  printf("nwkim,TryConvTransposeOnSystolic,input,%s,W,%s,B,%s,output,%s,\n",input->ToString(),W->ToString(),B->ToString(),output->ToString());
   if (groups != 1) {
     return false;
   }
@@ -240,6 +242,7 @@ inline bool TryConvBackpropFilterOnSystolic(char accelerator_mode,
                               Tensor* output,
                               bool relu,
                               float output_scale) {
+  printf("nwkim,TryConvBackpropFilterOnSystolic,input,%s,W,%s,B,%s,output,%s,\n",input->ToString(),W->ToString(),B->ToString(),output->ToString());
   if (groups != 1) {
     return false;
   }
