@@ -826,6 +826,7 @@ Status TrainingRunner::TrainingLoop(IDataLoader& training_data_loader, IDataLoad
 
         auto start = std::chrono::high_resolution_clock::now();
 
+        printf("KJW,is_weight_update_step,%d,\n",is_weight_update_step);
         if (is_weight_update_step) {
           ORT_RETURN_IF_ERROR(PrepareFeedNamesAndFeeds(ModelUpdateStep,
                                                        training_data_loader,

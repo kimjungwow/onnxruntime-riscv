@@ -14,6 +14,7 @@
 #include "core/framework/session_state.h"
 #include "core/framework/op_kernel_context_internal.h"
 #include "core/framework/utils.h"
+#include <stdio.h>
 
 #if defined DEBUG_NODE_INPUTS_OUTPUTS
 #include "core/framework/debug_node_inputs_outputs_utils.h"
@@ -312,7 +313,23 @@ Status SequentialExecutor::Execute(const SessionState& session_state, const std:
         }
 #endif
 
+        // printf("KJW,compute_start\n");
+        
+      //   const Node& node_z = p_op_kernel->Node();
+      // std::cout << "KJW,Executed op kernel node," << node_name_for_profiling
+      //           << ",Index," << node_z.Index()
+      //           << ",OpType," << node_z.OpType()
+      //           << ",Name," << node_z.Name()
+      //           << ",Activation_Size," << input_activation_sizes
+      //           << ",Parameter_Size," << input_parameter_sizes
+      //           << ",Output_Size," << total_output_sizes
+      //           << "\n";
+                
+        LOGS(logger, INFO) << "\nKJW,Kernel_Start,"<<p_op_kernel->KernelDef().OpName()<<"\n";
+        // printf("KJW,kernelname,%s\n",p_op_kernel->KernelDef().OpName());
         compute_status = p_op_kernel->Compute(&op_kernel_context);
+        LOGS(logger, INFO) << "\nKJW,Kernel_Done,"<<p_op_kernel->KernelDef().OpName()<<"\n";
+        // printf("KJW,compute_done\n");
       }
       ORT_CATCH(const std::exception& ex) {
         ORT_HANDLE_EXCEPTION([&]() {

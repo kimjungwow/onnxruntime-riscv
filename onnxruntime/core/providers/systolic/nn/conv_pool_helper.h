@@ -34,6 +34,7 @@ inline bool TryConvOnSystolic(char accelerator_mode,
                               bool relu,
                               const PoolAttributes *pool_attrs_,
                               float output_scale) {
+  
   if (groups != 1) {
     return false;
   }
@@ -107,7 +108,10 @@ inline bool TryConvOnSystolic(char accelerator_mode,
   int batch_size = X->Shape()[0];
   int input_channels = X->Shape()[3];
   int output_channels = W->Shape()[3];
-
+  //printf("\n nwkim,TryConvOnSystolic,X,%s,W,%s,B,%s,output,%s,\n",X->Shape().ToString(),W->Shape().ToString(),B->Shape().ToString(),output->Shape().ToString());
+  printf("\n,KJW,SystolicConv++\n");
+  printf("\n,KJW,SystolicConv_X,%d,%d,%d,%d\n", X->Shape()[0], X->Shape()[1], X->Shape()[2], X->Shape()[3]);
+  printf("\n,KJW,SystolicConv_W,%d,%d,%d,%d\n", W->Shape()[0], W->Shape()[1], W->Shape()[2], W->Shape()[3]);
   SystolicConv(accelerator_mode,
                batch_size,
                input_dim,
@@ -126,7 +130,11 @@ inline bool TryConvOnSystolic(char accelerator_mode,
                pool_size,
                pool_stride,
                pool_padding);
+  printf("\n,KJW,SystolicConv_Done\n");
 
+  
+  
+  // printf("\n,KJW,SystolicConv_Y,%d,%d,%d,%d\n", Ydata[0], Ydata[1], Ydata[2], Ydata[3]);
   //printf("First few output data %d %d %d %d\n", Ydata[0], Ydata[1], Ydata[2], Ydata[3]);
   return true;
 }
@@ -144,6 +152,8 @@ inline bool TryConvTransposeOnSystolic(char accelerator_mode,
                               Tensor* output,
                               bool relu,
                               float output_scale) {
+
+  // printf("\n nwkim,TryConvTransposeOnSystolic,input,%s,W,%s,B,%s,output,%s,\n",input->Shape().ToString(),W->Shape().ToString(),B->Shape().ToString(),output->Shape().ToString());
   if (groups != 1) {
     return false;
   }
@@ -194,11 +204,7 @@ inline bool TryConvTransposeOnSystolic(char accelerator_mode,
   int batch_size = input->Shape()[0];
   int input_channels = input->Shape()[3];
   int output_channels = output->Shape()[3];
-
-  printf("Calling into systolicConvTranspose(/*batch_size = */  %d, /*input_dim = */ %d,"
-                      "/* input_channels = */ %d , /*output_channels = */ %d, /*output_dim=*/ %d, /*stride=*/%d,"
-                      "/*pad=*/ %d, /*kernel_dim=*/ %d",
-               batch_size,
+  printf("\nKJW,systolicConvTranspose++,%d,%d,%d,%d,%d,%d,%d,%d\n",batch_size,
                input_dim,
                input_channels,
                output_channels,
@@ -206,6 +212,34 @@ inline bool TryConvTransposeOnSystolic(char accelerator_mode,
                (int) strides[0],
                (int) pads[0],
                kernel_dim);
+  // printf("\nKJW,systolicConvTranspose_Print_Start\n");
+  // for (int i=0;i<input->Shape()[0];i++) {
+  //   for (int j=0;j<input->Shape()[1];j++) {
+  //     for (int k=0;k<input->Shape()[2];k++) {
+  //       for (int h=0;h<input->Shape()[3];h++) {
+  //         printf("%f ",input_data[h+(input->Shape()[3]*k)+(input->Shape()[2]*input->Shape()[3]*j)+(input->Shape()[1]*input->Shape()[2]*input->Shape()[3]*i)]);
+  //       }
+  //       printf("\n");
+
+  //     }
+  //     printf("\n");
+  //   }
+  //   printf("\n");
+
+  // }
+
+  // printf("\nKJW,systolicConvTranspose_Print_End\n");
+  // printf("Calling into systolicConvTranspose(/*batch_size = */  %d, /*input_dim = */ %d,"
+  //                     "/* input_channels = */ %d , /*output_channels = */ %d, /*output_dim=*/ %d, /*stride=*/%d,"
+  //                     "/*pad=*/ %d, /*kernel_dim=*/ %d",
+  //              batch_size,
+  //              input_dim,
+  //              input_channels,
+  //              output_channels,
+  //              output_dim,
+  //              (int) strides[0],
+  //              (int) pads[0],
+  //              kernel_dim);
 
   SystolicConvTranspose(accelerator_mode,
                batch_size,
@@ -223,7 +257,7 @@ inline bool TryConvTransposeOnSystolic(char accelerator_mode,
                /*relu =  */ relu,
                /* output_scale= */ output_scale);
 
-  printf("First few output data %f %f %f %f\n", output_data[0], output_data[1], output_data[2], output_data[3]);
+  // printf("First few output data %f %f %f %f\n", output_data[0], output_data[1], output_data[2], output_data[3]);
   return true;
 }
 
@@ -240,6 +274,7 @@ inline bool TryConvBackpropFilterOnSystolic(char accelerator_mode,
                               Tensor* output,
                               bool relu,
                               float output_scale) {
+  // printf("\n nwkim,TryConvBackpropFilterOnSystolic,input,%s,W,%s,B,%s,output,%s,\n",input->Shape().ToString(),W->Shape().ToString(),B->Shape().ToString(),output->Shape().ToString());
   if (groups != 1) {
     return false;
   }
@@ -292,11 +327,7 @@ inline bool TryConvBackpropFilterOnSystolic(char accelerator_mode,
   // N.b. the input channels are after the NHWC_to_CHWN
   int input_channels = input->Shape()[0];
   int output_channels = output->Shape()[3];
-
-  printf("Calling into SystolicConvBackpropFilter(/*batch_size = */ %d, /*input_dim = */ %d,"
-                      "/* input_channels = */ %d , /*output_channels = */ %d, /*output_dim=*/ %d, /*stride=*/%d,"
-                      "/*pad=*/ %d, /*kernel_dim=*/ %d",
-               batch_size,
+  printf("\nKJW,SystolicConvBackpropFilter++,%d,%d,%d,%d,%d,%d,%d,%d\n",batch_size,
                input_dim,
                input_channels,
                output_channels,
@@ -304,6 +335,34 @@ inline bool TryConvBackpropFilterOnSystolic(char accelerator_mode,
                (int) strides[0],
                (int) pads[0],
                kernel_dim);
+  
+  // printf("\nKJW,SystolicConvBackpropFilter_Print_Start\n");
+  // for (int i=0;i<W->Shape()[0];i++) {
+  //   for (int j=0;j<W->Shape()[1];j++) {
+  //     for (int k=0;k<W->Shape()[2];k++) {
+  //       for (int h=0;h<W->Shape()[3];h++) {
+  //         printf("%f ",Wdata[h+(W->Shape()[3]*k)+(W->Shape()[2]*W->Shape()[3]*j)+(W->Shape()[1]*W->Shape()[2]*W->Shape()[3]*i)]);
+  //       }
+  //       printf("\n");
+
+  //     }
+  //     printf("\n");
+  //   }
+  //   printf("\n");
+  // }
+  // printf("\nKJW,SystolicConvBackpropFilter_Print_End\n");
+  
+  // printf("Calling into SystolicConvBackpropFilter(/*batch_size = */ %d, /*input_dim = */ %d,"
+  //                     "/* input_channels = */ %d , /*output_channels = */ %d, /*output_dim=*/ %d, /*stride=*/%d,"
+  //                     "/*pad=*/ %d, /*kernel_dim=*/ %d",
+  //              batch_size,
+  //              input_dim,
+  //              input_channels,
+  //              output_channels,
+  //              output_dim,
+  //              (int) strides[0],
+  //              (int) pads[0],
+  //              kernel_dim);
 
   SystolicConvBackpropFilter(accelerator_mode,
                batch_size,
@@ -321,7 +380,7 @@ inline bool TryConvBackpropFilterOnSystolic(char accelerator_mode,
                /*relu =  */ relu,
                /* output_scale= */ output_scale);
 
-  printf("First few output data %f %f %f %f\n", output_data[0], output_data[1], output_data[2], output_data[3]);
+  // printf("First few output data %f %f %f %f\n", output_data[0], output_data[1], output_data[2], output_data[3]);
   return true;
 }
 

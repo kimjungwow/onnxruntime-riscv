@@ -451,8 +451,8 @@ static void sp_tiled_matmul_ws(const elem_t * A, const elem_t * B,
         bool full_C, bool low_D,
         bool no_bias, bool repeating_bias,
         uint8_t weightA) {
-
-  /*
+  printf("\nKJW,gemmini_loop_ws,A_B_C,%p,%p,%p,\n",A,B,C);
+  
   const uint32_t A_sp_addr_start = 0;
   const uint32_t B_sp_addr_start = BANK_NUM * BANK_ROWS - K * J * DIM;
   const uint32_t D_sp_addr_start = 1 << (ADDR_LEN-1);
@@ -469,6 +469,7 @@ static void sp_tiled_matmul_ws(const elem_t * A, const elem_t * B,
   const size_t sizeof_D = low_D ? sizeof(elem_t) : sizeof(acc_t);
   const size_t sizeof_C = full_C ? sizeof(acc_t) : sizeof(elem_t);
 
+  printf("\nKJW,gemmini_loop_ws,move_in_d,\n");
   // Move-in D
   if (D != NULL && !no_bias) {
     for (size_t i = 0; i < I; i++) {
@@ -493,6 +494,8 @@ static void sp_tiled_matmul_ws(const elem_t * A, const elem_t * B,
           (B_sp_addr_start + (k*J + j)*DIM);
         const uint32_t C_sp_addr = C_sp_addr_start + (i*J + j)*DIM;
 
+        printf("\nKJW,a_transpose,%d,\n",a_transpose);
+        printf("KJW,gemmini_loop_ws,move_in_a,\n");
         // Mvin A
         if (a_transpose) {
           if (j == 0 && i % A_blocks == 0) {
@@ -513,6 +516,8 @@ static void sp_tiled_matmul_ws(const elem_t * A, const elem_t * B,
 
         }
 
+        printf("\nKJW,b_transpose,%d,\n",b_transpose);
+        printf("KJW,gemmini_loop_ws,move_in_b,\n");
         // Mvin B
         if (b_transpose) {
           if (i == 0 && k % B_blocks == 0) {
@@ -532,6 +537,7 @@ static void sp_tiled_matmul_ws(const elem_t * A, const elem_t * B,
           }
         }
 
+        printf("\nKJW,gemmini_loop_ws,compute,\n");
         // Compute
         {
           uint32_t pre_sp_addr = i == 0 ? B_sp_addr : GARBAGE_ADDR;
@@ -560,6 +566,7 @@ static void sp_tiled_matmul_ws(const elem_t * A, const elem_t * B,
           }
         }
 
+        printf("\nKJW,gemmini_loop_ws,move_out_c,\n");
         // Move-out C
         if (C != NULL && k == K-1 && (j == J-1 || j % C_blocks == C_blocks-1)) {
           const size_t rounded_j = (j / C_blocks) * C_blocks;
@@ -576,14 +583,20 @@ static void sp_tiled_matmul_ws(const elem_t * A, const elem_t * B,
       }
     }
   }
-  */
-
+  
+  
+  
+  // printf("TEST,PARAM_gemmini_loop_ws,I_J_K,%lu,%lu,%lu,pad_I_J_K,%lu,%lu,%lu,\n",(unsigned long)I,(unsigned long)J,(unsigned long)K,(unsigned long)pad_I,(unsigned long)pad_J,(unsigned long)pad_K);
+  // printf("TEST,PARAM_gemmini_loop_ws2,row_stride_A_B_C_D,%lu,%lu,%lu,%lu,transpose_A_B,%d,%d,\n",(unsigned long)A_row_stride, (unsigned long)B_row_stride,(unsigned long)C_row_stride,(unsigned long)(repeating_bias ? 0 : D_row_stride),a_transpose,b_transpose);
+  // printf("TEST,PARAM_gemmini_loop_ws3,full_C,%d,low_D,%d,no_bias,%d,repeating_bias,%d,\n",full_C,low_D,no_bias,repeating_bias);
+  
+  
   // Combined loop
-  gemmini_loop_ws(I, J, K, pad_I, pad_J, pad_K, A, B, no_bias ? NULL : D, C,
-    A_row_stride, B_row_stride, repeating_bias ? 0 : D_row_stride, C_row_stride,
-    a_transpose, b_transpose,
-    full_C, low_D, !no_bias || D == NULL,
-    weightA);
+  // gemmini_loop_ws(I, J, K, pad_I, pad_J, pad_K, A, B, no_bias ? NULL : D, C,
+  //   A_row_stride, B_row_stride, repeating_bias ? 0 : D_row_stride, C_row_stride,
+  //   a_transpose, b_transpose,
+  //   full_C, low_D, !no_bias || D == NULL,
+  //   weightA);
 }
 
 static void tiled_matmul_outer(size_t dim_I, size_t dim_J, size_t dim_K,
@@ -1151,9 +1164,12 @@ static void sp_tiled_conv_A_stride(
     C_sp_addr_row = (C_sp_addr_row + ACC_ROWS / 2) % ACC_ROWS;
   }
 
-  gemmini_loop_conv_ws(batch_size, in_dim, in_channels, out_channels, out_dim, pool_out_dim, stride, padding, kernel_dim, kernel_dilation, pool_size, pool_stride, pool_padding, batches, porows, pocols, pochs, krows, kcols, kchs, lpad, rpad, upad, dpad, plpad, prpad, pupad, pdpad, orows, ocols, weights, output, bias, input, no_bias, no_pool, downsample, wrot180, input_dilated, act, trans_output_1203, trans_weight_1203, trans_weight_0132, trans_input_3120);
+  printf("\nKJW,gemmini_loop_conv_ws,I_W_O_B,%p,%p,%p,%p,\n",input,weights,output,bias);
+  // printf("TEST,PARAMS_gemmini_loop_conv_ws,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,\n",batch_size, in_dim, in_channels, out_channels, out_dim, pool_out_dim, stride, padding, kernel_dim, kernel_dilation, pool_size, pool_stride, pool_padding, batches, porows, pocols, pochs, krows, kcols, kchs, lpad, rpad, upad, dpad, plpad, prpad, pupad, pdpad, orows, ocols);
+  // gemmini_loop_conv_ws(batch_size, in_dim, in_channels, out_channels, out_dim, pool_out_dim, stride, padding, kernel_dim, kernel_dilation, pool_size, pool_stride, pool_padding, batches, porows, pocols, pochs, krows, kcols, kchs, lpad, rpad, upad, dpad, plpad, prpad, pupad, pdpad, orows, ocols, weights, output, bias, input, no_bias, no_pool, downsample, wrot180, input_dilated, act, trans_output_1203, trans_weight_1203, trans_weight_0132, trans_input_3120);
 
-  /*
+  
+  printf("\nKJW,gemmini_loop_conv_ws,conv_mvin_bias,\n");
   // mvin bias
   if (bias != NULL) {
     // TODO we probably don't need quite this many nested loops for this part
@@ -1182,6 +1198,9 @@ static void sp_tiled_conv_A_stride(
         }
   }
 
+  
+  printf("\n,KJW,trans_input_3120,%d\n",trans_input_3120);
+  printf("KJW,gemmini_loop_conv_ws,conv_mvin_input,\n");
   // mvin input
   {
     int max_chs_per_mvin = ichs < MAX_BLOCK_LEN * DIM ? ichs :
@@ -1256,6 +1275,8 @@ static void sp_tiled_conv_A_stride(
       }
   }
 
+  printf("\n,KJW,trans_weight_0132,%d\n",trans_weight_0132);
+  printf("KJW,gemmini_loop_conv_ws,conv_mvin_weight,\n");
   // mvin weights
   {
     int max_chs_per_mvin = ochs < MAX_BLOCK_LEN * DIM ? ochs :
@@ -1308,13 +1329,14 @@ static void sp_tiled_conv_A_stride(
     }
   }
 
+  printf("\nKJW,gemmini_loop_conv_ws,conv_compute,\n");
   // Compute
   {
     const int b_it = trans_input_3120 ? DIM : 1;
     const int ocol_it = trans_input_3120 ? 1 : (DIM << input_dilated);
 
     if (trans_input_3120) {
-      gemmini_extended3_config_ex(0, 0, 0, 0, 0, 0, orows * ocols, irows * icols, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, true);
+      gemmini_extended3_config_ex(0, 0, 0, 0, 0, orows * ocols, irows * icols, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, true);
     }
 
     for (int och = 0; och < ochs; och += DIM) {
@@ -1405,6 +1427,7 @@ static void sp_tiled_conv_A_stride(
 #undef DS
 #undef UNDILATED
 
+  printf("\nKJW,gemmini_loop_conv_ws,conv_mvout_output,\n");
   // mvout output
   if (output != NULL) {
     if (no_pool) {
@@ -1448,7 +1471,7 @@ static void sp_tiled_conv_A_stride(
       gemmini_extended_config_st(out_channels * sizeof(elem_t), act, scale);
     }
   }
-  */
+  
 }
 
 //resnet downsampling layer (no padding, kernel size 1, stride 2)

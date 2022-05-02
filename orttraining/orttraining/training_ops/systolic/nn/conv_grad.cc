@@ -115,6 +115,10 @@ Status ConvGrad_nhwc<T>::Compute(OpKernelContext* context) const {
   char acc_mode = static_cast<const SystolicExecutionProvider*>(this->Info().GetExecutionProvider())->GetAcceleratorMode();
   profiling::Profiler& profiler = static_cast<OpKernelContextInternal*>(context)->GetProfiler();
   bool profiling_enabled = profiler.IsEnabled();
+  //jwkim
+  printf("Profiling : %d\n",profiling_enabled);
+  //long long dW_start = TimeDiffMicroSeconds(profiler.Now());
+  //printf("Test2: %lld\n",dW_start);
 
   const Tensor* dY = context->Input<Tensor>(0);
   const Tensor* X = context->Input<Tensor>(1);

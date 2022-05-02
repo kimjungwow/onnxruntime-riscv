@@ -710,6 +710,8 @@ Status Transpose::Compute(OpKernelContext* ctx) const {
   const TensorShape& input_shape = X.Shape();
   const std::vector<int64_t>& input_dims = input_shape.GetDims();
   size_t rank = input_dims.size();
+  printf("\nKJW,Transpose_Compute\n");
+  printf("\nKJW,Transpose_X,%ld,%ld,%ld,%ld,\n",X.Shape()[0],X.Shape()[1],X.Shape()[2],X.Shape()[3]);
 
   std::vector<int64_t> output_dims(rank);
   const std::vector<size_t>* p_perm;
@@ -740,6 +742,7 @@ Status Transpose::Compute(OpKernelContext* ctx) const {
     // fall back to default implementation
     status = DoUntypedTranspose(*p_perm, X, Y);
   }
+  printf("\nKJW,Transpose_Y,%ld,%ld,%ld,%ld,\n",Y.Shape()[0],Y.Shape()[1],Y.Shape()[2],Y.Shape()[3]);
 
   return status;
 }
